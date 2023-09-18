@@ -1,0 +1,31 @@
+#ansible-playbook -i inventory.yml ios-show-ver.yml
+---
+- name:  facts
+  connection: network_cli
+  gather_facts: 
+  hosts: Cisco_Router
+
+  tasks:
+    - name: Run multiple commands
+      cisco.ios.ios_command:
+        commands:
+        - show interfaces
+        - show running-config
+        - show ip interface brief
+        - show ip route
+        - show ip eigrp neighbors
+        - show version
+      register: result
+
+
+    - name: Print output to file
+      ansible.builtin.copy:
+        content: "{{result.stdout}}"
+        dest: /backup/Cisco_Router_monitor_output/{{ inventory_hostname }}_startconfig.txt
+      delegate_to: localhost 
+
+    - name: print result
+      debug:
+        var: result.stdout_lines
+
+

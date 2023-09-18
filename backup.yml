@@ -1,0 +1,27 @@
+---
+- name:  facts
+  connection: network_cli
+  gather_facts: false
+  hosts: Cisco_Router
+
+  tasks:
+    - name: backup job
+      cisco.ios.config:
+        backup: true
+        backup_options:
+          dir_path: /PR/
+          filename: "{{ inventory_hostname }}.txt"
+      register: config_output
+    - name: backup in a file
+      copy:
+        content: "{{ config_output.backup_path }}"
+        dest: output-1.txt
+    - name: take local copy
+      copy:
+        content: "{{ config_output.backup_path }}"
+        dest: /PR/output-2.txt
+      delegate_to: localhost
+    - name: take value in template
+      template:
+        src: j2-template.j2
+        dest: /PR/dest-config-file.txt

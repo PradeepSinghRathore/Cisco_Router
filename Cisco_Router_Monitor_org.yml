@@ -1,0 +1,18 @@
+#ansible-playbook -i inventory.yml ios-show-ver.yml
+---
+- name:  facts
+  connection: network_cli
+  gather_facts: 
+  hosts: Cisco_Router
+
+  tasks:
+    - name: show ver
+      register: result
+      ios_command:
+        commands:
+          - command: show version
+
+    - name: print result
+      debug:
+        var: result.stdout_lines
+
